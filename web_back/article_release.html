@@ -15,6 +15,8 @@
     <script src="js/jedate/js/jedate.js"></script>
     <script src="js/tinymce/js/tinymce/tinymce.min.js"></script>
     <script src="js/tinymce/js/tinymce_setup.js"></script>
+    <script src="./js/template-web.js"></script>
+    <script src="./js/moment.js"></script>
 </head>
 
 <body>
@@ -31,15 +33,17 @@
                     </div>
                 </div>
                 <div class="form-group">
+
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
+                        <img src="./images/pic06.jpg" style="height:100px" alt=""><br>
                         <input type="file" id="exampleInputFile">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control">
+                        <select class="form-control article_cate">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
@@ -79,7 +83,38 @@
             </form>
         </div>
     </div>
+    <script id="tmp_cate" type="text/html">
+        {{each data v }}
+            <option value="{{v.id}}">{{v.name}}</option>
+        {{/each}}
+    </script>
+  
+    <script>
+        //添加按钮的预览图片
+        $(function () {
+            $('#exampleInputFile').on('change',function(){
+                var iconFile = this.files[0];
+                var url = URL.createObjectURL(iconFile);
+                $(this).prev().prev().attr('src', url);
+               // console.log(url)   
+            })
+            //自动请求获得文章类别
+        $.ajax({
+           url:'http://localhost:8000/admin/category_search', 
+           success:function(res){
+               //console.log(res);
+               if(res.code == 200) {
+                   var resHtml = template('tmp_cate',res)
+                    $('.article_cate').html(resHtml);
+               }
+           }
+        })   
+        //获取时间
+        var currentDateStr = moment().format('YYYY-MM-DD');
+        $('#dateinput').val(currentDateStr);
+        });
 
+    </script>
 </body>
 
 </html>
